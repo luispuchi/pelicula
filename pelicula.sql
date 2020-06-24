@@ -1,22 +1,37 @@
-- respuesta 1
-CREAR  BASE DE DATOS  peliculas ;
-- respuesta 2
-CREAR  TABLA  peliculas (id INT , pelicula VARCHAR ( 70 ), año SMALLINT , director VARCHAR ( 100 ), PRIMARY KEY (id));
-CREAR  TABLA  reparto (id INT , actores VARCHAR ( 70 ), CLAVE EXTRANJERA (id) REFERENCIAS peliculas (id));
-- respuesta 3
-\ copy peliculas FROM  ' /home/patan/Escritorio/DATA_BASE/pelicula/peliculas.csv ' CSV HEADER;
-\ copy reparto FROM  ' /home/patan/Escritorio/DATA_BASE/pelicula/reparto.csv ' CSV HEADER;
-- respuesta 4
-SELECCIONE  peliculas . pelicula , peliculas . a ño,   peliculas . director , reparto . actores  DE peliculas, reparto DONDE pelicula = ' Titanic ' ;
-- respuesta 5
-SELECCIONE  peliculas . pelicula  DE reparto, peliculas DONDE actores = ' Harrison Ford '  Y  peliculas . id  =  reparto . id ;
-- respuesta 6
-SELECCIONE al director, cuente ( * ) DE peliculas GRUPO POR director ORDEN POR conteo DESC  LIMIT  10 ;
-- respuesta 7
-SELECCIONE  EL CONTEO ( DISTINTOS actores) DESDE reparto;
-- respuesta 8
-SELECCIONE pelicula, año DE peliculas DONDE año > =  1990  Y año <=  1999  ORDEN POR año ASC ;
-- respuesta 9
-SELECCIONE  reparto . actores , peliculas . a ño DE reparto, peliculas DONDE año =  2001  Y  peliculas . id  =  reparto . id ;
-- respuesta 10
-SELECCIONE pelicula, año, actores DE peliculas IZQUIERDA ÚNETE reparto EN  peliculas . id  =  reparto . ID  PEDIDO POR año DESC , pelicula;
+DROP DATABASE peliculas;
+
+-- 1. Crear base de datos llamada películas
+CREATE DATABASE peliculas;
+\c peliculas
+-- 2. Revisar los archivos peliculas.csv y reparto.csv para crear las tablas correspondientes,determinando 
+CREATE TABLE peliculas
+(id INT PRIMARY KEY,
+ pelicula VARCHAR(70),
+ anyo_estreno INT,
+ director VARCHAR(50)
+);
+CREATE TABLE reparto
+(id_pelicula INT ,
+ actor VARCHAR(30),
+ FOREIGN KEY (id_pelicula) REFERENCES peliculas(id)
+);
+-- 3. Cargar ambos archivos a su tabla correspondiente
+\copy peliculas FROM 'peliculas.csv' CSV HEADER;
+\copy reparto FROM 'reparto.csv' csv;
+-- 4. Listar todos los actores que aparecen en la película "Titanic", indicando el título de la película,
+-- año de estreno, director y todo el reparto.S
+SELECT actor, pelicula, anyo_estreno, director  FROM peliculas
+JOIN reparto ON peliculas.id=reparto.id_pelicula WHERE peliculas.pelicula = 'Titanic';
+-- 5. Listar los titulos de las películas donde actúe Harrison Ford.
+SELECT pelicula  FROM peliculas
+JOIN reparto ON peliculas.id=reparto.id_pelicula WHERE reparto.actor = 'Harrison Ford';
+-- 6. Listar los 10 directores mas populares, indicando su nombre y cuántas películas aparecen en el top 100.
+SELECT director , count(*) FROM peliculas GROUP BY director ORDER BY count(*) DESC LIMIT 10 ;
+-- 7. Indicar cuantos actores distintos hay 
+SELECT count(DISTINCT actor) FROM reparto ;
+-- 8. Indicar las películas estrenadas entre los 
+-- años 1990 y 1999 (ambos incluidos) ordenadas por título de manera ascendente.
+SELECT pelicula, anyo_estreno  FROM peliculas WHERE anyo_estreno>=1990  AND anyo_estreno <= 1999 ORDER BY pelicula ASC;
+-- 9. Listar el reparto de las películas lanzadas el año 2001 (1 punto)
+SELECT actor, pelicula, anyo_estreno FROM peliculas
+JOIN reparto ON peliculas.id=reparto.id_pelicula WHERE anyo_estreno=2001;
