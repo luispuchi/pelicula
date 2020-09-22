@@ -35,3 +35,5 @@ SELECT pelicula, anyo_estreno  FROM peliculas WHERE anyo_estreno>=1990  AND anyo
 -- 9. Listar el reparto de las películas lanzadas el año 2001 (1 punto)
 SELECT actor, pelicula, anyo_estreno FROM peliculas
 JOIN reparto ON peliculas.id=reparto.id_pelicula WHERE anyo_estreno=2001;
+-- 10. Listar los actores de la película más nueva (1 punto)
+SELECT pelicula, año,  actors FROM peliculas LEFT JOIN reparto ON peliculas.id_pelicula= reparto.id_reparto ORDER BY año DESC, pelicula;
